@@ -32,3 +32,5 @@ coverage/
 # Firebase Admin SDK JSON (if applicable)
 *.firebase.json
 firebase-debug.log
+# Firebase Admin SDK credentials
+ve-project-ec7de-firebase-adminsdk-fbsvc-82be964c7d.json
