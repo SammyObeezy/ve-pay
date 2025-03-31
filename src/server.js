@@ -1,10 +1,8 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
-
-// Firebase Configuration
-const { db, auth, storage } = require("../src/config/firebaseConfig");
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
@@ -14,33 +12,22 @@ const videoRoutes = require("./routes/videoRoutes");
 
 // Import Middlewares
 const errorHandler = require("./middlewares/errorMiddleware");
+const verifyToken = require("./middlewares/authMiddleware");
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 app.use(morgan("dev"));
 dotenv.config();
 
-// Firebase Test Route
-app.get("/api/test-firebase", async (req, res) => {
-  try {
-    const testDoc = await db.collection("test").doc("sample").get();
-    if (!testDoc.exists) {
-      return res.status(404).json({ message: "No test document found" });
-    }
-    res.json({ data: testDoc.data() });
-  } catch (error) {
-    res.status(500).json({ message: "Firebase connection failed", error });
-  }
-});
-
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
-app.use("/api/faqs", faqRoutes);
-app.use("/api/videos", videoRoutes);
+app.use(authRoutes);
+app.use("/api/blogs", verifyToken, blogRoutes);
+app.use("/api/faqs", verifyToken, faqRoutes);
+app.use("/api/videos", verifyToken, videoRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

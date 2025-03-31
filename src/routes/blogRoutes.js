@@ -5,6 +5,6 @@ const verifyToken = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.post("/", verifyToken, addBlog); // Only authenticated users can add blogs
-router.get("/", getBlogs);
+router.get("/", verifyToken, getBlogs);
 
 module.exports = router;

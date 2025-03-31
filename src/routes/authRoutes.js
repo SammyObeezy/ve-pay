@@ -1,7 +1,11 @@
 const express = require("express");
-const { loginUser } = require("../controllers/authController");
-
 const router = express.Router();
-router.post("/login", loginUser);
+
+const firebaseAuthController = require("../controllers/authController");
+
+router.post("/api/register", firebaseAuthController.registerUser);
+router.post("/api/login", firebaseAuthController.loginUser);
+router.post("/api/logout", firebaseAuthController.logoutUser);
+router.post("/api/reset-password", firebaseAuthController.resetPassword);
 
 module.exports = router;
