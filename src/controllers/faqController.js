@@ -1,23 +1,53 @@
-const { db } = require("../config/firebase");
+const { addFAQ, getFAQs, updateFAQ, deleteFAQ } = require("../models/FAQ");
 
-exports.addFAQ = async (req, res) => {
-  const { question, answer } = req.body;
-
-  try {
-    const newFAQ = { question, answer };
-    await db.collection("faqs").add(newFAQ);
-    res.status(201).json({ message: "FAQ added", faq: newFAQ });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to add FAQ" });
+class FAQController {
+  async addFAQ(req, res) {
+    const { question, answer, categories } = req.body;
+    try {
+      const faqId = await addFAQ({ question, answer, categories });
+      res.status(201).json({ message: "FAQ created successfully", faqId });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error creating FAQ", error: error.message });
+    }
   }
-};
 
-exports.getFAQs = async (req, res) => {
-  try {
-    const faqs = await db.collection("faqs").get();
-    const faqList = faqs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    res.json(faqList);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch FAQs" });
+  async getFAQs(req, res) {
+    try {
+      const faqs = await getFAQs();
+      res.json(faqs);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error fetching FAQs", error: error.message });
+    }
   }
-};
+
+  async updateFAQ(req, res) {
+    const { id } = req.params;
+    const { question, answer, categories } = req.body;
+    try {
+      await updateFAQ(id, { question, answer, categories });
+      res.json({ message: "FAQ updated successfully" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error updating FAQ", error: error.message });
+    }
+  }
+
+  async deleteFAQ(req, res) {
+    const { id } = req.params;
+    try {
+      await deleteFAQ(id);
+      res.json({ message: "FAQ deleted successfully" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error deleting FAQ", error: error.message });
+    }
+  }
+}
+
+module.exports = new FAQController();
