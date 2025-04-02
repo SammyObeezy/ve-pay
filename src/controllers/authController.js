@@ -4,7 +4,7 @@ const {
   sendEmailVerification,
   signInWithEmailAndPassword,
 } = require("../config/firebase");
-
+const { admin } = require("../config/firebase");
 const auth = getAuth();
 class FirebaseAuthController {
   registerUser(req, res) {
@@ -60,7 +60,7 @@ class FirebaseAuthController {
         res.status(500).json({ message: errorMessage });
       });
   }
-  logoutUser(req) {
+  logoutUser(req, res) {
     signOut(auth)
       .then(() => {
         res.clearCookie("access_token");
